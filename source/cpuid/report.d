@@ -24,7 +24,6 @@ unittest
 /// Returns report for `cpuid.unified`.
 string unified()()
 {
-    import std.meta;
     import std.traits;
     import std.array;
     import std.format;
@@ -118,11 +117,15 @@ string unified()()
     return app.data;
 }
 
+private template AliasSeq(T..)
+{
+    alias AliasSeq = T;
+}
+
 /// Returns report for `cpuid.x86_any`.
 string x86_any()()
 {
 
-    import std.meta;
     import std.traits;
     import std.array;
     import std.format;
