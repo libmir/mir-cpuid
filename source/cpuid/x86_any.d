@@ -79,7 +79,7 @@ extern(C)
 nothrow @nogc
 void cpuid_x86_any_init()
 {
-    static if (__VERSION__ > 2068)
+    static if (__VERSION__ >= 2068)
         pragma(inline, false);
     CpuInfo info = _cpuid(0);
     _maxBasicLeaf = _cpuid(0).a;
@@ -421,7 +421,7 @@ Params: brand = fixed length string to initiate
 +/
 size_t brand(ref char[48] brand)
 {
-    static if (__VERSION__ > 2068)
+    static if (__VERSION__ >= 2068)
         pragma(inline, false);
     CpuInfo info = void;
     info = _cpuid(0 + 2 ^ 0x8000_0000);

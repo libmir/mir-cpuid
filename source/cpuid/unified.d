@@ -100,7 +100,7 @@ nothrow @nogc
 extern(C)
 void cpuid_init()
 {
-    static if (__VERSION__ > 2068)
+    static if (__VERSION__ >= 2068)
         pragma(inline, false);
 
     import cpuid.x86_any;

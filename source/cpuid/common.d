@@ -36,7 +36,8 @@ struct  Cache
     /// Code: `associative == associative.max`
     bool isFullyAssociative()
     {
-        pragma(inline, true);
+        static if (__VERSION__ >= 2068)
+            pragma(inline, true);
         return associative == associative.max;
     }
 }
@@ -58,13 +59,15 @@ struct Tlb
     */
     uint size()
     {
-        pragma(inline, true);
+        static if (__VERSION__ >= 2068)
+            pragma(inline, true);
         return entries * page;
     }
     /// Code: `associative == associative.max`
     bool isFullyAssociative()
     {
-        pragma(inline, true);
+        static if (__VERSION__ >= 2068)
+            pragma(inline, true);
         return associative == associative.max;
     }
 }
