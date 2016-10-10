@@ -98,9 +98,11 @@ It calls appropriate basic initialization for each module (`cpuid_x86_any_init` 
 version(X86_Any)
 nothrow @nogc
 extern(C)
-pragma(inline, false)
 void cpuid_init()
 {
+    static if (__VERSION__ > 2068)
+        pragma(inline, false);
+
     import cpuid.x86_any;
 
     cpuid_x86_any_init();

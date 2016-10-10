@@ -77,9 +77,10 @@ It is safe to call this function multiple times.
 +/
 extern(C)
 nothrow @nogc
-pragma(inline, false)
 void cpuid_x86_any_init()
 {
+    static if (__VERSION__ > 2068)
+        pragma(inline, false);
     CpuInfo info = _cpuid(0);
     _maxBasicLeaf = _cpuid(0).a;
 
@@ -418,9 +419,10 @@ Brand, e.g. `Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz`.
 Returns: brand length
 Params: brand = fixed length string to initiate
 +/
-pragma(inline, false)
 size_t brand(ref char[48] brand)
 {
+    static if (__VERSION__ > 2068)
+        pragma(inline, false);
     CpuInfo info = void;
     info = _cpuid(0 + 2 ^ 0x8000_0000);
     (cast(uint[12])brand)[0 * 4 + 0] = info.a;
