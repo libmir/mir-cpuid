@@ -149,6 +149,8 @@ union LeafExt6Information
         }
         else
         {
+            @trusted @property pure nothrow @nogc:
+
             /// EAX
             mixin(bitfields!(
                 uint, "L2ITlb4KSize", 11 - 0  + 1,
