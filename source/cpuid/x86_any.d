@@ -274,10 +274,10 @@ CpuInfo _cpuid(uint eax, uint ecx = 0)
         asm pure nothrow @nogc
         {
             "cpuid" : 
-                "=a" info.a,
-                "=b" info.b, 
-                "=c" info.c,
-                "=d" info.d,
+                "=a" a,
+                "=b" b, 
+                "=c" c,
+                "=d" d,
                 : "a" eax, "c" ecx;
         }
     }
