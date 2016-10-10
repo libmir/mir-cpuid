@@ -117,10 +117,7 @@ string unified()()
     return app.data;
 }
 
-private template AliasSeq(T..)
-{
-    alias AliasSeq = T;
-}
+private alias AliasSeq(T...) = T;
 
 /// Returns report for `cpuid.x86_any`.
 string x86_any()()
