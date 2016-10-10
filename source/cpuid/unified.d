@@ -1,5 +1,8 @@
 /++
-High level absraction on top of all architectures.
+$(H2 High level absraction on top of all architectures.)
+
+$(GREEN This module is available for betterC compilation mode.)
+
 
 License:   $(WEB www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
 
@@ -15,21 +18,33 @@ unittest
         import std.stdio;
         import cpuid.unified;
 
+        cpuid_init();
+
         enum fmt = "%14s: %s";
 
-        fmt.writefln("vendor", vendor);
-        fmt.writefln("brand", brand);
+        fmt.writeln("vendor ", vendor);
+        char[48] brandName = void;
+        auto len = brand(brandName);
+        fmt.writeln("brand ", brandName[0 .. len]);
 
-        fmt.writefln("cores", cores);
-        fmt.writefln("threads", threads);
+        fmt.writeln("cores ", cores);
+        fmt.writeln("threads ", threads);
 
-        fmt.writefln("data caches", dCache.length);
-        fmt.writefln("code caches", iCache.length);
-        fmt.writefln("unified caches", uCache.length);
+        fmt.writeln("data caches ", dCache.length);
+        fmt.writeln("code caches ", iCache.length);
+        fmt.writeln("unified caches ", uCache.length);
 
-        fmt.writefln("data TLBs", dTlb.length);
-        fmt.writefln("code TLBs", iTlb.length);
-        fmt.writefln("unified TLBs", uTlb.length);
+        fmt.writeln("data TLBs ", dTlb.length);
+        fmt.writeln("code TLBs ", iTlb.length);
+        fmt.writeln("unified TLBs ", uTlb.length);
+    }
+}
+
+version(LDC)
+{
+    version(unittest) {} else
+    {
+        pragma(LDC_no_moduleinfo);
     }
 }
 
@@ -53,7 +68,7 @@ version(X86_Any)
 else
 static assert(0);
 
-private __gshared immutable
+private __gshared
 {
     uint _cpus;
     uint _cores;
@@ -80,11 +95,21 @@ private T2 assocCopy(T2, T1)(T1 from)
     return to;
 }
 
+/++
+Initialize basic CPU information including basic architecture.
+It is safe to call this function multiple times.
+It calls appropriate basic initialization for each module (`cpuid_x86_any_init` for X86 machines).
++/
 version(X86_Any)
-pure nothrow @nogc
-shared static this()
+nothrow @nogc
+extern(C)
+pragma(inline, false)
+void cpuid_init()
 {
     import cpuid.x86_any;
+
+    cpuid_x86_any_init();
+
     static import cpuid.intel;
     static import cpuid.amd;
 
@@ -308,7 +333,7 @@ version(X86_Any)
 }
 else static assert(0);
 
-@safe pure nothrow @nogc:
+@trusted nothrow @nogc:
 
 /++
 Total number of CPU packages.
@@ -333,7 +358,7 @@ Data Caches
 Returns:
     Array composed of detected data caches. Array is sorted in ascending order.
 +/
-immutable(Cache)[] dCache() { return _dCache[0 .. _dCache_length]; }
+const(Cache)[] dCache() { return _dCache[0 .. _dCache_length]; }
 
 /++
 Instruction Caches
@@ -341,7 +366,7 @@ Instruction Caches
 Returns:
     Array composed of detected instruction caches. Array is sorted in ascending order.
 +/
-immutable(Cache)[] iCache() { return _iCache[0 .. _iCache_length]; }
+const(Cache)[] iCache() { return _iCache[0 .. _iCache_length]; }
 
 /++
 Unified Caches
@@ -349,7 +374,7 @@ Unified Caches
 Returns:
     Array composed of detected unified caches. Array is sorted in ascending order.
 +/
-immutable(Cache)[] uCache() { return _uCache[0 .. _uCache_length]; }
+const(Cache)[] uCache() { return _uCache[0 .. _uCache_length]; }
 
 /++
 Data Translation Lookaside Buffers
@@ -357,7 +382,7 @@ Data Translation Lookaside Buffers
 Returns:
     Array composed of detected data translation lookaside buffers. Array is sorted in ascending order.
 +/
-immutable(Tlb)[] dTlb() { return _dTlb[0 .. _dTlb_length]; }
+const(Tlb)[] dTlb() { return _dTlb[0 .. _dTlb_length]; }
 
 /++
 Instruction Translation Lookaside Buffers
@@ -365,7 +390,7 @@ Instruction Translation Lookaside Buffers
 Returns:
     Array composed of detected instruction translation lookaside buffers. Array is sorted in ascending order.
 +/
-immutable(Tlb)[] iTlb() { return _iTlb[0 .. _iTlb_length]; }
+const(Tlb)[] iTlb() { return _iTlb[0 .. _iTlb_length]; }
 
 /++
 Unified Translation Lookaside Buffers
@@ -373,5 +398,5 @@ Unified Translation Lookaside Buffers
 Returns:
     Array composed of detected unified translation lookaside buffers. Array is sorted in ascending order.
 +/
-immutable(Tlb)[] uTlb() { return _uTlb[0 .. _uTlb_length]; }
+const(Tlb)[] uTlb() { return _uTlb[0 .. _uTlb_length]; }
 

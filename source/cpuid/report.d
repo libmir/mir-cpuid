@@ -10,7 +10,9 @@ module cpuid.report;
 ///
 unittest
 {
+    import cpuid.unified;
     import cpuid.report;
+    cpuid_init();
     import std.stdio;
     cpuid.report.unified.writeln;
     version(X86)
@@ -19,14 +21,14 @@ unittest
         cpuid.report.x86_any.writeln;
 }
 
-import std.meta;
-import std.traits;
-import std.array;
-import std.format;
-
 /// Returns report for `cpuid.unified`.
-string unified()
+string unified()()
 {
+    import std.meta;
+    import std.traits;
+    import std.array;
+    import std.format;
+
     import cpuid.unified;
 
     auto app = appender!string;
@@ -65,7 +67,9 @@ string unified()
     app.formattedWrite("################ Unified Information ################\n");
     //app.formattedWrite("CPU count =  %s\n", cpus);
     app.formattedWrite("Vendor: %s\n", vendor);
-    app.formattedWrite("Brand: %s\n", brand);
+    char[48] brandName = void;
+    auto len = brand(brandName);
+    app.formattedWrite("Brand: %s\n", brandName[0 .. len]);
     app.formattedWrite("Cores per CPU: %s\n", cores);
     app.formattedWrite("Threads per CPU: %s\n", threads);
 
@@ -120,8 +124,14 @@ string unified()
 }
 
 /// Returns report for `cpuid.x86_any`.
-string x86_any()
+string x86_any()()
 {
+
+    import std.meta;
+    import std.traits;
+    import std.array;
+    import std.format;
+
     import cpuid.x86_any;
 
     auto app = appender!string;
