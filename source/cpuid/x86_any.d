@@ -240,16 +240,32 @@ CpuInfo _cpuid(uint eax, uint ecx = 0)
     uint d = void;
     version(LDC)
     {
-        pragma(inline, true);
-        auto asmt = __asmtuple!
-        (uint, uint, uint, uint) (
-            "cpuid", 
-            "={eax},={ebx},={ecx},={edx},{eax},{ecx}", 
-            eax, ecx);
-        a = asmt.v[0];
-        b = asmt.v[1];
-        c = asmt.v[2];
-        d = asmt.v[3];
+        version(Windows)
+        {
+            asm pure nothrow @nogc
+            {
+                mov EAX, eax;
+                mov ECX, ecx;
+                cpuid;
+                mov a, EAX;
+                mov b, EBX;
+                mov c, ECX;
+                mov d, EDX;
+            }
+        }
+        else
+        {
+            pragma(inline, true);
+            auto asmt = __asmtuple!
+            (uint, uint, uint, uint) (
+                "cpuid", 
+                "={eax},={ebx},={ecx},={edx},{eax},{ecx}", 
+                eax, ecx);
+            a = asmt.v[0];
+            b = asmt.v[1];
+            c = asmt.v[2];
+            d = asmt.v[3];
+        }
     }
     else
     version(GNU)
