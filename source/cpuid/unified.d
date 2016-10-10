@@ -22,21 +22,16 @@ unittest
 
         enum fmt = "%14s: %s";
 
-        fmt.writeln("vendor ", vendor);
-        char[48] brandName = void;
-        auto len = brand(brandName);
-        fmt.writeln("brand ", brandName[0 .. len]);
+        fmt.writefln("cores", cores);
+        fmt.writefln("threads", threads);
 
-        fmt.writeln("cores ", cores);
-        fmt.writeln("threads ", threads);
+        fmt.writefln("data caches", dCache.length);
+        fmt.writefln("code caches", iCache.length);
+        fmt.writefln("unified caches", uCache.length);
 
-        fmt.writeln("data caches ", dCache.length);
-        fmt.writeln("code caches ", iCache.length);
-        fmt.writeln("unified caches ", uCache.length);
-
-        fmt.writeln("data TLBs ", dTlb.length);
-        fmt.writeln("code TLBs ", iTlb.length);
-        fmt.writeln("unified TLBs ", uTlb.length);
+        fmt.writefln("data TLBs", dTlb.length);
+        fmt.writefln("code TLBs", iTlb.length);
+        fmt.writefln("unified TLBs", uTlb.length);
     }
 }
 
@@ -317,21 +312,7 @@ void cpuid_init()
     }
 }
 else
-static assert(0, "cpuid is not implemented");
-
-version(X86_Any)
-{
-    static import cpuid.x86_any;
-    /++
-    Vendor, e.g. `GenuineIntel`.
-    +/
-    alias vendor = cpuid.x86_any.vendor;
-    /++
-    Brand, e.g. `Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz`.
-    +/
-    alias brand = cpuid.x86_any.brand;
-}
-else static assert(0);
+static assert(0, "cpuid_init is not implemented for this target.");
 
 @trusted nothrow @nogc:
 
