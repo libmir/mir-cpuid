@@ -119,6 +119,7 @@ private struct Leaf1Information
         CpuInfo info;
         struct
         {
+            @trusted @property pure nothrow @nogc:
             /// EAX
             mixin(bitfields!(
                 uint, "stepping", 3 - 0 + 1, /// Stepping ID
