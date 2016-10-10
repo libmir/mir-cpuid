@@ -727,7 +727,7 @@ union Leaf4Information
 
         version(D_Ddoc)
         {
-            const @trusted @property pure nothrow @nogc:
+            @trusted @property pure nothrow @nogc:
             /// Cache Type Field.
             Type type();
             /// Cache Level (starts at 1).
@@ -759,6 +759,7 @@ union Leaf4Information
         }
         else
         {
+            @trusted @property pure nothrow @nogc:
             /// EAX
             mixin(bitfields!(
                 Type, "type", 5,
