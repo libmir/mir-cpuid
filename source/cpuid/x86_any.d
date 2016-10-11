@@ -107,10 +107,11 @@ void cpuid_x86_any_init()
     leaf1Information.info = _cpuid(1);
     if(leaf1Information.virtual)
     {
+        auto infov = _cpuid(0x4000_0000);;
         uint[3] n = void;
-        n[0] = info.b;
-        n[1] = info.d;
-        n[2] = info.c;
+        n[0] = infov.b;
+        n[1] = infov.d;
+        n[2] = infov.c;
         auto v = cast(T) cast(T[1]) n;
         import std.stdio;
         writeln("VV", cast(char[12])n);
