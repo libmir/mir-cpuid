@@ -141,6 +141,7 @@ string x86_any()()
     foreach(i, name; AliasSeq!(
         "vendor",
         "virtualVendor",
+        "virtual",
         "vendorIndex",
         "virtualVendorIndex",
         "brandIndex",

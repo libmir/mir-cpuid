@@ -51,7 +51,6 @@ version(D_InlineAsm_X86_64)
 
 public import cpuid.common;
 
-
 /// Leaf0
 private __gshared uint _maxBasicLeaf;
 
@@ -70,7 +69,7 @@ Initialize basic x86 CPU information.
 It is safe to call this function multiple times.
 +/
 extern(C)
-//nothrow @nogc
+nothrow @nogc
 void cpuid_x86_any_init()
 {
     static if (__VERSION__ >= 2068)
@@ -104,8 +103,6 @@ void cpuid_x86_any_init()
         n[0] = infov.b;
         n[1] = infov.c;
         n[2] = infov.d;
-        import std.stdio;
-        writeln("VV", cast(char[12])n);
         _virtualVendorId = VendorIndex.undefinedvm;
         foreach(i, ref name; cast(uint[3][]) vendors[VendorIndex.undefined + 1 .. $ - 1])
         {
@@ -252,7 +249,25 @@ CpuInfo _cpuid(uint eax, uint ecx = 0)
     uint d = void;
     version(LDC)
     {
-        version(none)
+        // @@@FIXME@@@
+        // https://github.com/ldc-developers/ldc/issues/1823
+        version(Windows)
+        {
+            asm pure nothrow @nogc
+            {
+                mov EAX, eax;
+                mov ECX, ecx;
+                cpuid;
+                mov a, EAX;
+                mov b, EBX;
+                mov c, ECX;
+                mov d, EDX;
+            }
+        }
+        else
+        // @@@FIXME@@@
+        // https://github.com/ldc-developers/ldc/issues/1823
+        version(X86)
         {
             asm pure nothrow @nogc
             {
