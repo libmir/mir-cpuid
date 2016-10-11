@@ -170,7 +170,7 @@ union Leaf1Information
             /// Enhanced Intel SpeedStep® Technology
             bool eist();
             /// Thermal Monitor 2
-            bool tm2();
+            bool therm_monitor2();
             /// SSSE3 Extensions
             bool ssse3();
             /// L1 Context ID
@@ -266,11 +266,11 @@ union Leaf1Information
             /// SSE2 Extensions
             bool sse2();
             /// Self Snoop
-            bool ss();
+            bool self_snoop();
             /// Multi-threading
             bool htt();
             /// Therm. Monitor
-            bool tm();
+            bool therm_monitor();
             /// Pend. Brk. EN.
             bool pbe();
         }
@@ -304,7 +304,7 @@ union Leaf1Information
                 bool, "vmx", 1, /// Virtual Machine Extensions
                 bool, "smx", 1, /// Safer Mode Extensions
                 bool, "eist", 1, /// Enhanced Intel SpeedStep® Technology
-                bool, "tm2", 1, /// Thermal Monitor 2
+                bool, "therm_monitor2", 1, /// Thermal Monitor 2
                 bool, "ssse3", 1, /// SSSE3 Extensions
                 bool, "cnxt_id", 1, /// L1 Context ID
                 bool, "sdbg", 1,
@@ -359,9 +359,9 @@ union Leaf1Information
                 bool, "fxsr", 1, /// FXSAVE/FXRSTOR
                 bool, "sse", 1, /// SSE Extensions
                 bool, "sse2", 1, /// SSE2 Extensions
-                bool, "ss", 1, /// Self Snoop
+                bool, "self_snoop", 1, /// Self Snoop
                 bool, "htt", 1, /// Multi-threading
-                bool, "tm", 1, /// Therm. Monitor
+                bool, "therm_monitor", 1, /// Therm. Monitor
                 bool, "", 1,
                 bool, "pbe", 1, /// Pend. Brk. EN.
             ));
@@ -832,7 +832,7 @@ bool smx() { return leaf1Information.smx; }
 /// Enhanced Intel SpeedStep® Technology
 bool eist() { return leaf1Information.eist; }
 /// Thermal Monitor 2
-bool tm2() { return leaf1Information.tm2; }
+bool therm_monitor2() { return leaf1Information.therm_monitor2; }
 /// SSSE3 Extensions
 bool ssse3() { return leaf1Information.ssse3; }
 /// L1 Context ID
@@ -928,11 +928,11 @@ bool sse() { return leaf1Information.sse; }
 /// SSE2 Extensions
 bool sse2() { return leaf1Information.sse2; }
 /// Self Snoop
-bool ss() { return leaf1Information.ss; }
+bool self_snoop() { return leaf1Information.self_snoop; }
 /// Multi-threading
 bool htt() { return leaf1Information.htt; }
 /// Therm. Monitor
-bool tm() { return leaf1Information.tm; }
+bool therm_monitor() { return leaf1Information.therm_monitor; }
 /// Pend. Brk. EN.
 bool pbe() { return leaf1Information.pbe; }
 
