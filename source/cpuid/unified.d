@@ -96,7 +96,7 @@ It is safe to call this function multiple times.
 It calls appropriate basic initialization for each module (`cpuid_x86_any_init` for X86 machines).
 +/
 version(X86_Any)
-nothrow @nogc
+//nothrow @nogc
 extern(C)
 void cpuid_init()
 {

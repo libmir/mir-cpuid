@@ -65,18 +65,12 @@ private __gshared uint _maxExtendedLeaf;
 private __gshared VendorIndex _vendorId;
 private __gshared VendorIndex _virtualVendorId;
 
-nothrow @nogc
-shared static this()
-{
-    cpuid_x86_any_init();
-}
-
 /++
 Initialize basic x86 CPU information.
 It is safe to call this function multiple times.
 +/
 extern(C)
-nothrow @nogc
+//nothrow @nogc
 void cpuid_x86_any_init()
 {
     static if (__VERSION__ >= 2068)
@@ -118,6 +112,8 @@ void cpuid_x86_any_init()
         n[1] = info.d;
         n[2] = info.c;
         auto v = cast(T) cast(T[1]) n;
+        import std.stdio;
+        writeln("VV", cast(char[12])n);
         _virtualVendorId = VendorIndex.undefinedvm;
         foreach(i, ref name; cast(T[]) vendors[VendorIndex.undefined + 1 .. $ - 1])
         {
