@@ -77,13 +77,6 @@ void cpuid_x86_any_init()
         pragma(inline, false);
     CpuInfo info = void;
 
-    align(4)
-    static struct T
-    {
-        ulong a;
-        uint b;
-    }
-
     info = _cpuid(0);
     _maxBasicLeaf = info.a;
 
@@ -92,11 +85,10 @@ void cpuid_x86_any_init()
         n[0] = info.b;
         n[1] = info.d;
         n[2] = info.c;
-        auto v = cast(T) cast(T[1]) n;
         _vendorId = VendorIndex.undefined;
-        foreach(i, ref name; cast(T[]) vendors[0 .. $ - 1])
+        foreach(i, ref name; cast(uint[3][]) vendors[0 .. $ - 1])
         {
-            if (v == name)
+            if (n == name)
             {
                 _vendorId = cast(VendorIndex) i;
                 break;
@@ -110,17 +102,16 @@ void cpuid_x86_any_init()
         auto infov = _cpuid(0x4000_0000);
         uint[3] n = void;
         n[0] = infov.b;
-        n[1] = infov.c;
-        n[2] = infov.d;
-        auto v = cast(T) cast(T[1]) n;
+        n[1] = infov.d;
+        n[2] = infov.c;
         import std.stdio;
         writeln("VV", cast(char[12])n);
         _virtualVendorId = VendorIndex.undefinedvm;
-        foreach(i, ref name; cast(T[]) vendors[VendorIndex.undefined + 1 .. $ - 1])
+        foreach(i, ref name; cast(uint[3][]) vendors[VendorIndex.undefined + 1 .. $ - 1])
         {
-            if (v == name)
+            if (n == name)
             {
-                _virtualVendorId = cast(VendorIndex) i;
+                _virtualVendorId = cast(VendorIndex) (i + VendorIndex.undefined + 1);
                 break;
             }
         }
@@ -321,37 +312,38 @@ CpuInfo _cpuid(uint eax, uint ecx = 0)
 
 nothrow @nogc @property:
 
+align(4)
+private __gshared immutable char[12][21] _vendors =
+[
+    "GenuineIntel",
+    "AuthenticAMD",
+
+    " SiS SiS SiS",
+    " UMC UMC UMC",
+    " VIA VIA VIA",
+    "AMDisbetter!",
+    "CentaurHauls",
+    "CyrixInstead",
+    "GenuineTMx86",
+    "Geode by NSC",
+    "NexGenDriven",
+    "RiseRiseRise",
+    "TransmetaCPU",
+    "Vortex86 SoC",
+    "   undefined",
+
+    " KVM KVM KVM",
+    " lrpepyh  vr",
+    "Microsoft Hv",
+    "VMwareVMware",
+    "XenVMMXenVMM",
+    "undefined vm",
+];
+
 /// VendorIndex name
 immutable(char)[12][] vendors()
 {
-    align(4)
-    static immutable char[12][] vendors =
-    [
-        "GenuineIntel",
-        "AuthenticAMD",
-
-        " SiS SiS SiS",
-        " UMC UMC UMC",
-        " VIA VIA VIA",
-        "AMDisbetter!",
-        "CentaurHauls",
-        "CyrixInstead",
-        "GenuineTMx86",
-        "Geode by NSC",
-        "NexGenDriven",
-        "RiseRiseRise",
-        "TransmetaCPU",
-        "Vortex86 SoC",
-        "   undefined",
-
-        " KVM KVM KVM",
-        " lrpepyh  vr",
-        "Microsoft Hv",
-        "VMwareVMware",
-        "XenVMMXenVMM",
-        "undefined vm",
-    ];
-    return vendors;
+    return _vendors;
 }
 
 ///
