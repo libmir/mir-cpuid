@@ -115,8 +115,8 @@ void cpuid_x86_any_init()
     {
         uint[3] n = void;
         n[0] = info.b;
-        n[1] = info.c;
-        n[2] = info.d;
+        n[1] = info.d;
+        n[2] = info.c;
         auto v = cast(T) cast(T[1]) n;
         _virtualVendorId = VendorIndex.undefinedvm;
         foreach(i, ref name; cast(T[]) vendors[VendorIndex.undefined + 1 .. $ - 1])
