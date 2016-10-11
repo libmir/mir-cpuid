@@ -252,7 +252,7 @@ CpuInfo _cpuid(uint eax, uint ecx = 0)
     uint d = void;
     version(LDC)
     {
-        version(all)
+        version(none)
         {
             asm pure nothrow @nogc
             {
