@@ -54,7 +54,6 @@ public import cpuid.common;
 
 /// Leaf0
 private __gshared uint _maxBasicLeaf;
-private __gshared char[12] _vendor;
 
 /// Leaf1
 private __gshared Leaf1Information leaf1Information;
@@ -64,6 +63,7 @@ private __gshared uint _maxExtendedLeaf;
 
 /// Other
 private __gshared VendorIndex _vendorId;
+private __gshared VendorIndex _virtualVendorId;
 
 nothrow @nogc
 shared static this()
@@ -81,16 +81,7 @@ void cpuid_x86_any_init()
 {
     static if (__VERSION__ >= 2068)
         pragma(inline, false);
-    CpuInfo info = _cpuid(0);
-    _maxBasicLeaf = _cpuid(0).a;
-
-    (cast(uint[3])_vendor)[0] = info.b;
-    (cast(uint[3])_vendor)[1] = info.d;
-    (cast(uint[3])_vendor)[2] = info.c;
-
-    leaf1Information.info = _cpuid(1);
-
-    _maxExtendedLeaf = _cpuid(0x8000_0000).a;
+    CpuInfo info = void;
 
     align(4)
     static struct T
@@ -99,14 +90,46 @@ void cpuid_x86_any_init()
         uint b;
     }
 
-    foreach(i, ref name; cast(T[]) vendors)
+    info = _cpuid(0);
+    _maxBasicLeaf = info.a;
+
     {
-        if (cast(T) cast(T[1]) _vendor  == name)
+        uint[3] n = void;
+        n[0] = info.b;
+        n[1] = info.d;
+        n[2] = info.c;
+        auto v = cast(T) cast(T[1]) n;
+        _vendorId = VendorIndex.undefined;
+        foreach(i, ref name; cast(T[]) vendors[0 .. $ - 1])
         {
-            _vendorId = cast(VendorIndex) i;
-            break;
+            if (v == name)
+            {
+                _vendorId = cast(VendorIndex) i;
+                break;
+            }
         }
     }
+    _virtualVendorId = _vendorId;
+    leaf1Information.info = _cpuid(1);
+    if(leaf1Information.virtual)
+    {
+        uint[3] n = void;
+        n[0] = info.b;
+        n[1] = info.c;
+        n[2] = info.d;
+        auto v = cast(T) cast(T[1]) n;
+        _virtualVendorId = VendorIndex.undefinedvm;
+        foreach(i, ref name; cast(T[]) vendors[VendorIndex.undefined + 1 .. $ - 1])
+        {
+            if (v == name)
+            {
+                _virtualVendorId = cast(VendorIndex) i;
+                break;
+            }
+        }
+    }
+
+    _maxExtendedLeaf = _cpuid(0x8000_0000).a;
 }
 
 /// Basic information about CPU.
@@ -171,7 +194,7 @@ private struct Leaf1Information
                 bool, "avx", 1,
                 bool, "f16c", 1,
                 bool, "rdrand", 1,
-                bool, "", 1,
+                bool, "virtual", 1,
             ));
 
             /// EDX
@@ -301,28 +324,6 @@ CpuInfo _cpuid(uint eax, uint ecx = 0)
 
 nothrow @nogc @property:
 
-/++
-Returns: `true` if CPU vendor is virtual.
-Params:
-    v = CPU vendor
-+/
-bool isVirtual(VendorIndex v)
-{
-    return v >= VendorIndex.undefinedvm;
-}
-
-///
-unittest
-{
-    with(VendorIndex)
-    {
-        assert(!undefined.isVirtual);
-        assert(!intel.isVirtual);
-        assert(undefinedvm.isVirtual);
-        assert(parallels.isVirtual);
-    }
-}
-
 /// VendorIndex name
 immutable(char)[12][] vendors()
 {
@@ -332,7 +333,6 @@ immutable(char)[12][] vendors()
         "GenuineIntel",
         "AuthenticAMD",
 
-        "   undefined",
         " SiS SiS SiS",
         " UMC UMC UMC",
         " VIA VIA VIA",
@@ -345,13 +345,14 @@ immutable(char)[12][] vendors()
         "RiseRiseRise",
         "TransmetaCPU",
         "Vortex86 SoC",
+        "   undefined",
 
-        "undefined vm",
         " KVM KVM KVM",
         " lrpepyh  vr",
         "Microsoft Hv",
         "VMwareVMware",
         "XenVMMXenVMM",
+        "undefined vm",
     ];
     return vendors;
 }
@@ -366,6 +367,12 @@ unittest
 VendorIndex vendorIndex()
 {
     return _vendorId;
+}
+
+/// VendorIndex encoded value for virtual machine.
+VendorIndex virtualVendorIndex()
+{
+    return _virtualVendorId;
 }
 
 /// Maximum Input Value for Basic CPUID Information
@@ -387,9 +394,6 @@ enum VendorIndex
     intel,
     /// AMD
     amd,
-
-    /// undefined
-    undefined,
 
     /// SiS
     sis,
@@ -416,8 +420,9 @@ enum VendorIndex
     /// Vortex
     vortex,
 
-    /// undefined virtual machine
-    undefinedvm, 
+    /// undefined
+    undefined,
+
 
     /// KVM
     kvm,
@@ -429,6 +434,9 @@ enum VendorIndex
     vmware,
     /// Xen HVM
     xen,
+
+    /// undefined virtual machine
+    undefinedvm, 
 }
 
 /++
@@ -470,9 +478,17 @@ size_t brand(ref char[48] brand)
 /++
 Vendor, e.g. `GenuineIntel`.
 +/
-const(char)[] vendor()
+string vendor()
 {
-    return _vendor;
+    return vendors[_vendorId];
+}
+
+/++
+Virtual vendor, e.g. `GenuineIntel` or `VMwareVMware`.
++/
+string virtualVendor()
+{
+    return vendors[_virtualVendorId];
 }
 
 /++
@@ -564,6 +580,8 @@ bool avx() { return leaf1Information.avx; }
 bool f16c() { return leaf1Information.f16c; }
 ///
 bool rdrand() { return leaf1Information.rdrand; }
+/// Virtual machine
+bool virtual() { return leaf1Information.virtual; }
 /// x87 FPU on Chip
 bool fpu() { return leaf1Information.fpu; }
 /// Virtual-8086 Mode Enhancement
