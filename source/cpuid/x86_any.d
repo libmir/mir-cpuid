@@ -107,7 +107,7 @@ void cpuid_x86_any_init()
     leaf1Information.info = _cpuid(1);
     if(leaf1Information.virtual)
     {
-        auto infov = _cpuid(0x4000_0000);;
+        auto infov = _cpuid(0x4000_0000);
         uint[3] n = void;
         n[0] = infov.b;
         n[1] = infov.d;
