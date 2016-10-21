@@ -326,21 +326,21 @@ Note: not implemented
 +/
 uint cpuid_cpus() { return _cpus; }
 /// ditto
-alias cpus = cpuid_cpus
+alias cpus = cpuid_cpus;
 
 /++
 Total number of cores per CPU.
 +/
 uint cpuid_cores() { return _cores; }
 /// ditto
-alias cores = cpuid_cores
+alias cores = cpuid_cores;
 
 /++
 Total number of threads per CPU.
 +/
 uint cpuid_threads() { return _threads; }
 /// ditto
-alias threads = cpuid_threads
+alias threads = cpuid_threads;
 
 /++
 Data Caches
@@ -350,7 +350,7 @@ Returns:
 +/
 const(Cache)[] cpuid_dCache() { return _dCache[0 .. _dCache_length]; }
 /// ditto
-alias dCache = cpuid_dCache
+alias dCache = cpuid_dCache;
 
 /++
 Instruction Caches
@@ -360,7 +360,7 @@ Returns:
 +/
 const(Cache)[] cpuid_iCache() { return _iCache[0 .. _iCache_length]; }
 /// ditto
-alias iCache = cpuid_iCache
+alias iCache = cpuid_iCache;
 
 /++
 Unified Caches
@@ -370,7 +370,7 @@ Returns:
 +/
 const(Cache)[] cpuid_uCache() { return _uCache[0 .. _uCache_length]; }
 /// ditto
-alias uCache = cpuid_uCache
+alias uCache = cpuid_uCache;
 
 /++
 Data Translation Lookaside Buffers
@@ -380,7 +380,7 @@ Returns:
 +/
 const(Tlb)[] cpuid_dTlb() { return _dTlb[0 .. _dTlb_length]; }
 /// ditto
-alias dTlb = cpuid_dTlb
+alias dTlb = cpuid_dTlb;
 
 /++
 Instruction Translation Lookaside Buffers
@@ -390,7 +390,7 @@ Returns:
 +/
 const(Tlb)[] cpuid_iTlb() { return _iTlb[0 .. _iTlb_length]; }
 /// ditto
-alias iTlb = cpuid_iTlb
+alias iTlb = cpuid_iTlb;
 
 /++
 Unified Translation Lookaside Buffers
@@ -400,4 +400,4 @@ Returns:
 +/
 const(Tlb)[] cpuid_uTlb() { return _uTlb[0 .. _uTlb_length]; }
 /// ditto
-alias uTlb = cpuid_uTlb
+alias uTlb = cpuid_uTlb;
