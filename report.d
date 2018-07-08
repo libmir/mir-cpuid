@@ -1,3 +1,9 @@
+/+ dub.json:
+{
+    "name": "cpuid-report",
+    "dependencies": {"mir-cpuid": {"path": "./"}},
+}
++/
 /++
 Text information generators.
 
@@ -7,10 +13,11 @@ Authors:   Ilya Yaroshenko
 +/
 module cpuid.report;
 
-///
-unittest
+void main()
 {
+    import cpuid.unified;
     import cpuid.report;
+    cpuid_init();
     import std.stdio;
     cpuid.report.unified.writeln;
     version(X86)
@@ -19,14 +26,13 @@ unittest
         cpuid.report.x86_any.writeln;
 }
 
-import std.meta;
-import std.traits;
-import std.array;
-import std.format;
-
 /// Returns report for `cpuid.unified`.
-string unified()
+string unified()()
 {
+    import std.traits;
+    import std.array;
+    import std.format;
+
     import cpuid.unified;
 
     auto app = appender!string;
@@ -63,9 +69,7 @@ string unified()
     }
 
     app.formattedWrite("################ Unified Information ################\n");
-    //app.formattedWrite("CPU count =  %s\n", cpus);
-    app.formattedWrite("Vendor: %s\n", vendor);
-    app.formattedWrite("Brand: %s\n", brand);
+    app.formattedWrite("CPU number: %s\n", cpus);
     app.formattedWrite("Cores per CPU: %s\n", cores);
     app.formattedWrite("Threads per CPU: %s\n", threads);
 
@@ -119,88 +123,141 @@ string unified()
     return app.data;
 }
 
+private alias AliasSeq(T...) = T;
+
 /// Returns report for `cpuid.x86_any`.
-string x86_any()
+string x86_any()()
 {
+
+    import std.traits;
+    import std.array;
+    import std.format;
+
     import cpuid.x86_any;
 
     auto app = appender!string;
 
     app.formattedWrite("################## x86 Information ##################\n");
 
+    //app.formattedWrite("CPU count =  %s\n", cpus);
+    char[48] brandName = void;
+    auto len = brand(brandName);
+    app.formattedWrite("%20s: %s\n", "brand", brandName[0 .. len]);
+
     foreach(i, name; AliasSeq!(
+        "vendor",
+        "virtualVendor",
+        "virtual",
         "vendorIndex",
+        "virtualVendorIndex",
         "brandIndex",
         "maxBasicLeaf",
         "maxExtendedLeaf",
-        "clflushLineSize",
-        "maxLogicalProcessors",
-        "initialAPIC",
-        "stepping",
-        "model",
-        "family",
-        "type",
-        "extendedModel",
-        "extendedFamily",
-        "sse3",
-        "pclmulqdq",
-        "dtes64",
-        "monitor",
-        "ds_cpl",
-        "vmx",
-        "smx",
-        "eist",
-        "tm2",
-        "ssse3",
-        "cnxt_id",
-        "sdbg",
-        "fma",
-        "cmpxchg16b",
-        "xtpr",
-        "pdcm",
-        "pcid",
-        "dca",
-        "sse41",
-        "sse42",
-        "x2apic",
-        "movbe",
-        "popcnt",
-        "tsc_deadline",
+        "max7SubLeafs",
+        "acpi",
+        "adx",
         "aes",
-        "xsave",
-        "osxsave",
-        "avx",
-        "f16c",
-        "rdrand",
-        "fpu",
-        "vme",
-        "de",
-        "pse",
-        "tsc",
-        "msr",
-        "pae",
-        "mce",
-        "cx8",
         "apic",
-        "sep",
-        "mtrr",
-        "pge",
-        "mca",
+        "avx",
+        "avx2",
+        "avx512bw",
+        "avx512cd",
+        "avx512dq",
+        "avx512er",
+        "avx512f",
+        "avx512ifma",
+        "avx512pf",
+        "avx512vbmi",
+        "avx512vl",
+        "bmi1",
+        "bmi2",
+        "clflushLineSize",
+        "clflushopt",
+        "clfsh",
+        "clwb",
         "cmov",
+        "cmpxchg16b",
+        "cnxt_id",
+        "cx8",
+        "dca",
+        "de",
+        "deprecates",
+        "ds",
+        "ds_cpl",
+        "dtes64",
+        "eist",
+        "extendedFamily",
+        "extendedModel",
+        "f16c",
+        "family",
+        "fdp_excptn_only",
+        "fma",
+        "fpu",
+        "fsgsbase",
+        "fxsr",
+        "hle",
+        "htt",
+        "ia32_tsc_adjust",
+        "initialAPIC",
+        "intel_pt",
+        "invpcid",
+        "maxLogicalProcessors",
+        "mca",
+        "mce",
+        "mmx",
+        "model",
+        "monitor",
+        "movbe",
+        "mpx",
+        "msr",
+        "mtrr",
+        "ospke",
+        "osxsave",
+        "pae",
         "pat",
+        "pbe",
+        "pcid",
+        "pclmulqdq",
+        "pcommit",
+        "pdcm",
+        "pge",
+        "pku",
+        "popcnt",
+        "prefetchwt1",
+        "pse",
         "pse36",
         "psn",
-        "clfsh",
-        "ds",
-        "acpi",
-        "mmx",
-        "fxsr",
+        "rdrand",
+        "rdseed",
+        "rdt_a",
+        "rdt_m",
+        "rtm",
+        "sdbg",
+        "sep",
+        "sgx",
+        "sha",
+        "smap",
+        "smep",
+        "smx",
+        "self_snoop",
         "sse",
         "sse2",
-        "ss",
-        "htt",
-        "tm",
-        "pbe",
+        "sse3",
+        "sse41",
+        "sse42",
+        "ssse3",
+        "stepping",
+        "supports",
+        "therm_monitor",
+        "therm_monitor2",
+        "tsc",
+        "tsc_deadline",
+        "type",
+        "vme",
+        "vmx",
+        "x2apic",
+        "xsave",
+        "xtpr",
         ))
         static if(mixin(`isIntegral!(typeof(` ~ name ~ `))`))
             mixin(`app.formattedWrite("%20s: 0x%X\n", "` ~ name ~ `",  ` ~ name ~ `);`);

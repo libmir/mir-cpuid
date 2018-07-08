@@ -15,6 +15,7 @@ DOC_OUTPUT_DIR=web
 DOC_SOURCE_DIR=doc
 GENERATED=.generated
 CPUID_DIR=source
+ALGORITHM_DIR=mir-algorithm/source
 DLANGORG_DIR=$(DOC_SOURCE_DIR)/dlang.org
 
 ###########################################################
@@ -27,7 +28,7 @@ DLANGORG_DIR=$(DOC_SOURCE_DIR)/dlang.org
 CPUID_PACKAGES = cpuid
 #$(addprefix cpuid/,\ amd intel x86_any)
 
-PACKAGE_cpuid = unified common report x86_any intel amd
+PACKAGE_cpuid = unified common x86_any intel amd
 #PACKAGE_cpuid_blas = package dot gemm gemv
 
 #MOD_EXCLUDES=$(addprefix --ex=, cpuid.internal)
@@ -76,7 +77,7 @@ ADDSOURCE=$(if $(subst index.d,,$1),$(CPUID_DIR)/$1,$1)
 # ../web/phobos/std_conv.html : std/conv.d $(STDDOC) ; ...
 $(foreach p,$(SRC_DOCUMENTABLES),$(eval \
 $(DOC_OUTPUT_DIR)/$(call D2HTML,$p) : $(call ADDSOURCE,$p) $(STDDOC) ;\
-  $(DDOC) $(STDDOC) -I$(CPUID_DIR) -Df$$@ $$<))
+  $(DDOC) $(STDDOC) -I$(CPUID_DIR) -I$(ALGORITHM_DIR) -Df$$@ $$<))
 
 ###########################################################
 # Setup all other resources needed by dlang.org

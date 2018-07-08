@@ -1,12 +1,11 @@
 [![Gitter](https://img.shields.io/gitter/room/libmir/public.svg)](https://gitter.im/libmir/public)
 
-[![Circle CI](https://circleci.com/gh/libmir/cpuid.svg?style=svg)](https://circleci.com/gh/libmir/cpuid)
-[![Build Status](https://travis-ci.org/libmir/cpuid.svg?branch=master)](https://travis-ci.org/libmir/cpuid)
-[![Build status](https://ci.appveyor.com/api/projects/status/f2n4dih5s4c32q7u/branch/master?svg=true)](https://ci.appveyor.com/project/9il/cpuid/branch/master)
+[![Build Status](https://travis-ci.org/libmir/mir-cpuid.svg?branch=master)](https://travis-ci.org/libmir/mir-cpuid)
+[![Build Status](https://ci.appveyor.com/api/projects/status/f2n4dih5s4c32q7u/branch/master?svg=true)](https://ci.appveyor.com/project/9il/mir-cpuid/branch/master)
 
-[![Dub version](https://img.shields.io/dub/v/cpuid.svg)](http://code.dlang.org/packages/cpuid)
-[![Dub downloads](https://img.shields.io/dub/dt/cpuid.svg)](http://code.dlang.org/packages/cpuid)
-[![License](https://img.shields.io/dub/l/cpuid.svg)](http://code.dlang.org/packages/cpuid)
+[![Dub version](https://img.shields.io/dub/v/mir-cpuid.svg)](http://code.dlang.org/packages/mir-cpuid)
+[![Dub downloads](https://img.shields.io/dub/dt/mir-cpuid.svg)](http://code.dlang.org/packages/mir-cpuid)
+[![License](https://img.shields.io/dub/l/mir-cpuid.svg)](http://code.dlang.org/packages/mir-cpuid)
 
 # CPU Information
 
@@ -16,10 +15,9 @@ void main()
     import std.stdio;
     import cpuid.unified;
 
-    enum fmt = "%14s: %s";
+    cpuid_init();
 
-    fmt.writefln("vendor", vendor);
-    fmt.writefln("brand", brand);
+    enum fmt = "%14s: %s";
 
     fmt.writefln("cores", cores);
     fmt.writefln("threads", threads);
@@ -42,18 +40,23 @@ See http://docs.cpuid.dlang.io .
 
 ## Testing
 
-See [all reports](https://github.com/libmir/cpuid/issues?utf8=%E2%9C%93&q=is%3Aissue%20label%3AReports%20).
+See [all reports](https://github.com/libmir/mir-cpuid/issues?utf8=%E2%9C%93&q=is%3Aissue%20label%3AReports%20).
 
-To receive a report about your CPU, run
+Run the following command from the project's directory to receive a report about your CPU
 
 ```
-dub fetch cpuid
-dub test cpuid
+dub --single report.d
 ```
 
 Please report dub log in a new GitHub issue!
 
 See also [output example](https://gist.github.com/9il/66d2f824ca52e1293358b86604e7fb21).
+
+## Building a betterC library
+
+```
+dub build --compiler=ldmd2 --build=betterC --build-mode=singleFile --parallel
+```
 
 ## API Features
 
@@ -70,11 +73,12 @@ See also [output example](https://gist.github.com/9il/66d2f824ca52e1293358b86604
 
  - The library was written completely from scratch.
  - Code is clean and simple.
- - Unions and `std.bitmanip.bitfields` are used instead of bit operations.
+ - Unions and `mir.bitmanip.bitfields` are used instead of bit operations.
+ - Slim betterC library with `extern(C)` insterface.
 
 ## TODO
 
- - Add information about recent features like AVX2, AVX512F.
- - Add information about ARM target and ARM vendors.
- - Test a lot of different CPUs.
- - Extend testing infrastructure.
+ - [x] Add information about recent features like AVX2, AVX512F.
+ - [ ] Add information about ARM target and ARM vendors.
+ - [x] Test a lot of different CPUs.
+ - [ ] Extend testing infrastructure.

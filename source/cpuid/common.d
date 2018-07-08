@@ -1,5 +1,7 @@
 /++
-Auxiliary data types and functions.
+$(H2 Auxiliary data types and functions.)
+
+$(GREEN This module is is compatible with betterC compilation mode.)
 
 License:   $(WEB www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
 
@@ -14,7 +16,7 @@ struct  Cache
     uint size;
     /// Ways of associativity. Equals `associative.max` if cache is fully associative.
     ushort associative;
-    /// Cache line in KBs
+    /// Cache line in bytes
     ushort line;
     /// CPU cores per cache
     ubyte cores;
@@ -23,10 +25,11 @@ struct  Cache
 
     const @property @safe pure nothrow @nogc:
 
-    ///
-    bool isFullyAssociative()
+    /// Code: `associative == associative.max`
+    bool isFullyAssociative()()
     {
-        pragma(inline, true);
+        static if (__VERSION__ >= 2068)
+            pragma(inline, true);
         return associative == associative.max;
     }
 }
@@ -43,16 +46,20 @@ struct Tlb
 
     const @property @safe pure nothrow @nogc:
 
-    /// Computes size in KBs
-    uint size()
+    /** Computes size in KBs.
+    Code: `entries * page`
+    */
+    uint size()()
     {
-        pragma(inline, true);
+        static if (__VERSION__ >= 2068)
+            pragma(inline, true);
         return entries * page;
     }
-    ///
-    bool isFullyAssociative()
+    /// Code: `associative == associative.max`
+    bool isFullyAssociative()()
     {
-        pragma(inline, true);
+        static if (__VERSION__ >= 2068)
+            pragma(inline, true);
         return associative == associative.max;
     }
 }

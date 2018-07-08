@@ -1,5 +1,7 @@
 /++
-$(H1 AMD CPUID Specification)
+$(H2 AMD CPUID Information)
+
+$(GREEN This module is compatible with betterC compilation mode.)
 
 References:
     AMD CPUID Specification. Publication # 25481 / Revision: 2.34 / Issue Date: September 2010
@@ -10,8 +12,6 @@ Authors:   Ilya Yaroshenko
 +/
 module cpuid.amd;
 
-public import cpuid.x86_any;
-
 version(X86)
     version = X86_Any;
 else
@@ -19,6 +19,8 @@ version(X86_64)
     version = X86_Any;
 
 version(X86_Any):
+
+public import cpuid.x86_any;
 
 /++
 L1 Cache and TLB Identifiers.
@@ -91,13 +93,13 @@ Specification: AMD
 +/
 union LeafExt6Information
 {
-    ///
+    /// CPUID payload
     CpuInfo info;
 
     ///
     struct
     {
-        import std.bitmanip: bitfields;
+        import mir.bitmanip: bitfields;
 
         version(D_Ddoc)
         {
@@ -139,6 +141,8 @@ union LeafExt6Information
         }
         else
         {
+            @trusted @property pure nothrow @nogc:
+
             /// EAX
             mixin(bitfields!(
                 uint, "L2ITlb4KSize", 11 - 0  + 1,

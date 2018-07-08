@@ -1,5 +1,7 @@
 /++
-$(H1 Intel 64 and IA-32 CPUID Information)
+$(H2 Intel 64 and IA-32 CPUID Information)
+
+$(GREEN This module is available for betterC compilation mode.)
 
 References:
     Intel® 64 and IA-32 Architectures Software Developer’s Manual
@@ -73,8 +75,8 @@ struct Leaf2Information
 
     Specification: Intel
     +/
-    pure nothrow @nogc
-    this(CpuInfo info)
+    nothrow @nogc
+    this()(CpuInfo info)
     {
         version(BigEndian) static assert(0, "Leaf2Information is not implemented for BigEndian.");
 
@@ -693,15 +695,14 @@ Specification: Intel
 +/
 union Leaf4Information
 {
-    import std.bitmanip: bitfields;
+    import mir.bitmanip: bitfields;
 
-    ///
+    /// CPUID payload
     CpuInfo info;
 
     ///
     struct
     {
-
         ///
         enum Type
         {
@@ -717,7 +718,7 @@ union Leaf4Information
 
         version(D_Ddoc)
         {
-            const @trusted @property pure nothrow @nogc:
+            @trusted @property pure nothrow @nogc:
             /// Cache Type Field.
             Type type();
             /// Cache Level (starts at 1).
@@ -749,6 +750,7 @@ union Leaf4Information
         }
         else
         {
+            @trusted @property pure nothrow @nogc:
             /// EAX
             mixin(bitfields!(
                 Type, "type", 5,
@@ -781,7 +783,7 @@ union Leaf4Information
 
         /// Compute cache size in KBs.
         pure nothrow @nogc
-        uint size() @property
+        uint size()() @property
         {
             return cast(uint) (
                 size_t(l + 1) * 
@@ -790,8 +792,9 @@ union Leaf4Information
                 size_t(s + 1) >> 10);
         }
 
+        ///
         pure nothrow @nogc
-        void fill(ref Cache cache) @property
+        void fill()(ref Cache cache) @property
         {
             cache.size = size;
             cache.line = cast(typeof(cache.line))(l + 1);

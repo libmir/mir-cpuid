@@ -1,11 +1,29 @@
 /++
-High level absraction on top of all architectures.
+$(H2 High level abstraction on top of all architectures.)
+
+$(GREEN This module is compatible with betterC compilation mode.)
+
 
 License:   $(WEB www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
 
 Authors:   Ilya Yaroshenko
 +/
 module cpuid.unified;
+
+version (OSX)
+    version = Darwin;
+else
+version (iOS)
+    version = Darwin;
+else
+version (TVOS)
+    version = Darwin;
+else
+version (WatchOS)
+    version = Darwin;
+else
+version (D_Ddoc)
+    version = Darwin;
 
 ///
 unittest
@@ -15,10 +33,9 @@ unittest
         import std.stdio;
         import cpuid.unified;
 
-        enum fmt = "%14s: %s";
+        cpuid_init();
 
-        fmt.writefln("vendor", vendor);
-        fmt.writefln("brand", brand);
+        enum fmt = "%14s: %s";
 
         fmt.writefln("cores", cores);
         fmt.writefln("threads", threads);
@@ -53,7 +70,7 @@ version(X86_Any)
 else
 static assert(0);
 
-private __gshared immutable
+private __gshared
 {
     uint _cpus;
     uint _cores;
@@ -80,11 +97,25 @@ private T2 assocCopy(T2, T1)(T1 from)
     return to;
 }
 
+export
+nothrow @nogc
+extern(C):
+
+/++
+Initialize basic CPU information including basic architecture.
+It is safe to call this function multiple times.
+It calls appropriate basic initialization for each module (`cpuid_x86_any_init` for X86 machines).
++/
 version(X86_Any)
-pure nothrow @nogc
-shared static this()
+void cpuid_init()
 {
+    static if (__VERSION__ >= 2068)
+        pragma(inline, false);
+
     import cpuid.x86_any;
+
+    cpuid_x86_any_init();
+
     static import cpuid.intel;
     static import cpuid.amd;
 
@@ -234,14 +265,14 @@ shared static this()
                 }
                 if(maxBasicLeaf >= 0xB)
                 {
-                    _threads = cast(ushort) _cpuid(0xB, 1).b;
+                    auto th = cast(ushort) _cpuid(0xB, 1).b;
+                    if(th > 0)
+                        _threads = th;
                     auto threadsPerCore = cast(ushort) _cpuid(0xB, 0).b;
-                    if(_threads == 0 || threadsPerCore == 0) // appveyor workaround
+                    if(threadsPerCore)
                     {
-                        _threads = 1;
-                        threadsPerCore = 1;
+                        _cores = _threads / threadsPerCore;
                     }
-                    _cores = _threads / threadsPerCore;
                 }
             }
             else
@@ -270,10 +301,16 @@ shared static this()
             }
         }
     }
-
-    if(!_cpus) _cpus = 1;
+    version(Darwin)
+    {
+        import cpuid.sys.darwin: sysctlbyname1;
+        _cpus = sysctlbyname1("hw.packages");
+    }
+    else
+    {
+        _cpus = _cpus = 1;
+    }
     if(!_cores) _cores = 1;
-    if(!_threads) _threads = 1;
     if(_threads < _cores) _threads = _cores;
 
     if(_iCache_length) _iCache[0].cores = 1;
@@ -292,40 +329,36 @@ shared static this()
     }
 }
 else
-static assert(0, "cpuid is not implemented");
-
-version(X86_Any)
+void cpuid_init()
 {
-    static import cpuid.x86_any;
-    /++
-    Vendor, e.g. `GenuineIntel`.
-    +/
-    alias vendor = cpuid.x86_any.vendor;
-    /++
-    Brand, e.g. `Intel(R) Core(TM) i7-4770HQ CPU @ 2.20GHz`.
-    +/
-    alias brand = cpuid.x86_any.brand;
+    _cpus = 1;
+    _cores = 1;
+    _threads = 1;
 }
-else static assert(0);
 
-@safe pure nothrow @nogc:
+@trusted:
 
 /++
 Total number of CPU packages.
 Note: not implemented
 +/
-
-uint cpus() { return _cpus; }
+uint cpuid_cpus() { return _cpus; }
+/// ditto
+alias cpus = cpuid_cpus;
 
 /++
 Total number of cores per CPU.
 +/
-uint cores() { return _cores; }
+uint cpuid_cores() { return _cores; }
+/// ditto
+alias cores = cpuid_cores;
 
 /++
 Total number of threads per CPU.
 +/
-uint threads() { return _threads; }
+uint cpuid_threads() { return _threads; }
+/// ditto
+alias threads = cpuid_threads;
 
 /++
 Data Caches
@@ -333,7 +366,9 @@ Data Caches
 Returns:
     Array composed of detected data caches. Array is sorted in ascending order.
 +/
-immutable(Cache)[] dCache() { return _dCache[0 .. _dCache_length]; }
+const(Cache)[] cpuid_dCache() { return _dCache[0 .. _dCache_length]; }
+/// ditto
+alias dCache = cpuid_dCache;
 
 /++
 Instruction Caches
@@ -341,7 +376,9 @@ Instruction Caches
 Returns:
     Array composed of detected instruction caches. Array is sorted in ascending order.
 +/
-immutable(Cache)[] iCache() { return _iCache[0 .. _iCache_length]; }
+const(Cache)[] cpuid_iCache() { return _iCache[0 .. _iCache_length]; }
+/// ditto
+alias iCache = cpuid_iCache;
 
 /++
 Unified Caches
@@ -349,7 +386,9 @@ Unified Caches
 Returns:
     Array composed of detected unified caches. Array is sorted in ascending order.
 +/
-immutable(Cache)[] uCache() { return _uCache[0 .. _uCache_length]; }
+const(Cache)[] cpuid_uCache() { return _uCache[0 .. _uCache_length]; }
+/// ditto
+alias uCache = cpuid_uCache;
 
 /++
 Data Translation Lookaside Buffers
@@ -357,7 +396,9 @@ Data Translation Lookaside Buffers
 Returns:
     Array composed of detected data translation lookaside buffers. Array is sorted in ascending order.
 +/
-immutable(Tlb)[] dTlb() { return _dTlb[0 .. _dTlb_length]; }
+const(Tlb)[] cpuid_dTlb() { return _dTlb[0 .. _dTlb_length]; }
+/// ditto
+alias dTlb = cpuid_dTlb;
 
 /++
 Instruction Translation Lookaside Buffers
@@ -365,7 +406,9 @@ Instruction Translation Lookaside Buffers
 Returns:
     Array composed of detected instruction translation lookaside buffers. Array is sorted in ascending order.
 +/
-immutable(Tlb)[] iTlb() { return _iTlb[0 .. _iTlb_length]; }
+const(Tlb)[] cpuid_iTlb() { return _iTlb[0 .. _iTlb_length]; }
+/// ditto
+alias iTlb = cpuid_iTlb;
 
 /++
 Unified Translation Lookaside Buffers
@@ -373,5 +416,6 @@ Unified Translation Lookaside Buffers
 Returns:
     Array composed of detected unified translation lookaside buffers. Array is sorted in ascending order.
 +/
-immutable(Tlb)[] uTlb() { return _uTlb[0 .. _uTlb_length]; }
-
+const(Tlb)[] cpuid_uTlb() { return _uTlb[0 .. _uTlb_length]; }
+/// ditto
+alias uTlb = cpuid_uTlb;
