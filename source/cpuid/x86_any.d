@@ -66,7 +66,7 @@ It is safe to call this function multiple times.
 +/
 export extern(C)
 nothrow @nogc
-void cpuid_x86_any_init()
+void mir_cpuid_x86_any_init()
 {
     static if (__VERSION__ >= 2068)
         pragma(inline, false);
@@ -366,6 +366,9 @@ union Leaf1Information
         }
     }
 }
+
+/// ditto
+alias cpuid_x86_any_init = mir_cpuid_x86_any_init;
 
 /// Extended information about CPU.
 union Leaf7Information
