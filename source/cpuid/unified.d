@@ -18,7 +18,7 @@ unittest
         import std.stdio;
         import cpuid.unified;
 
-        cpuid_init();
+        mir_cpuid_init();
 
         enum fmt = "%14s: %s";
 
@@ -82,9 +82,23 @@ private T2 assocCopy(T2, T1)(T1 from)
     return to;
 }
 
+extern(C):
+
+    pragma(crt_constructor)
+    void mir_cpuid_crt_init()
+    {
+        // mir_cpuid_init();
+    }
+
 export
 nothrow @nogc
 extern(C):
+
+
+version(X86_Any)
+static if (__VERSION__ >= 2078)
+{
+}
 
 /++
 Initialize basic CPU information including basic architecture.
@@ -92,14 +106,14 @@ It is safe to call this function multiple times.
 It calls appropriate basic initialization for each module (`cpuid_x86_any_init` for X86 machines).
 +/
 version(X86_Any)
-void cpuid_init()
+void mir_cpuid_init()
 {
     static if (__VERSION__ >= 2068)
         pragma(inline, false);
 
     import cpuid.x86_any;
 
-    cpuid_x86_any_init();
+    mir_cpuid_x86_any_init();
 
     static import cpuid.intel;
     static import cpuid.amd;
@@ -308,12 +322,15 @@ void cpuid_init()
     }
 }
 else
-void cpuid_init()
+void mir_cpuid_init()
 {
     _cpus = 1;
     _cores = 1;
     _threads = 1;
 }
+/// ditto
+
+alias cpuid_init = mir_cpuid_init;
 
 @trusted:
 
@@ -321,23 +338,23 @@ void cpuid_init()
 Total number of CPU packages.
 Note: not implemented
 +/
-uint cpuid_cpus() { return _cpus; }
+uint mir_cpuid_cpus() { return _cpus; }
 /// ditto
-alias cpus = cpuid_cpus;
+alias cpus = mir_cpuid_cpus;
 
 /++
 Total number of cores per CPU.
 +/
-uint cpuid_cores() { return _cores; }
+uint mir_cpuid_cores() { return _cores; }
 /// ditto
-alias cores = cpuid_cores;
+alias cores = mir_cpuid_cores;
 
 /++
 Total number of threads per CPU.
 +/
-uint cpuid_threads() { return _threads; }
+uint mir_cpuid_threads() { return _threads; }
 /// ditto
-alias threads = cpuid_threads;
+alias threads = mir_cpuid_threads;
 
 /++
 Data Caches
@@ -345,9 +362,9 @@ Data Caches
 Returns:
     Array composed of detected data caches. Array is sorted in ascending order.
 +/
-const(Cache)[] cpuid_dCache() { return _dCache[0 .. _dCache_length]; }
+const(Cache)[] mir_cpuid_dCache() { return _dCache[0 .. _dCache_length]; }
 /// ditto
-alias dCache = cpuid_dCache;
+alias dCache = mir_cpuid_dCache;
 
 /++
 Instruction Caches
@@ -355,9 +372,9 @@ Instruction Caches
 Returns:
     Array composed of detected instruction caches. Array is sorted in ascending order.
 +/
-const(Cache)[] cpuid_iCache() { return _iCache[0 .. _iCache_length]; }
+const(Cache)[] mir_cpuid_iCache() { return _iCache[0 .. _iCache_length]; }
 /// ditto
-alias iCache = cpuid_iCache;
+alias iCache = mir_cpuid_iCache;
 
 /++
 Unified Caches
@@ -365,9 +382,9 @@ Unified Caches
 Returns:
     Array composed of detected unified caches. Array is sorted in ascending order.
 +/
-const(Cache)[] cpuid_uCache() { return _uCache[0 .. _uCache_length]; }
+const(Cache)[] mir_cpuid_uCache() { return _uCache[0 .. _uCache_length]; }
 /// ditto
-alias uCache = cpuid_uCache;
+alias uCache = mir_cpuid_uCache;
 
 /++
 Data Translation Lookaside Buffers
@@ -375,9 +392,9 @@ Data Translation Lookaside Buffers
 Returns:
     Array composed of detected data translation lookaside buffers. Array is sorted in ascending order.
 +/
-const(Tlb)[] cpuid_dTlb() { return _dTlb[0 .. _dTlb_length]; }
+const(Tlb)[] mir_cpuid_dTlb() { return _dTlb[0 .. _dTlb_length]; }
 /// ditto
-alias dTlb = cpuid_dTlb;
+alias dTlb = mir_cpuid_dTlb;
 
 /++
 Instruction Translation Lookaside Buffers
@@ -385,9 +402,9 @@ Instruction Translation Lookaside Buffers
 Returns:
     Array composed of detected instruction translation lookaside buffers. Array is sorted in ascending order.
 +/
-const(Tlb)[] cpuid_iTlb() { return _iTlb[0 .. _iTlb_length]; }
+const(Tlb)[] mir_cpuid_iTlb() { return _iTlb[0 .. _iTlb_length]; }
 /// ditto
-alias iTlb = cpuid_iTlb;
+alias iTlb = mir_cpuid_iTlb;
 
 /++
 Unified Translation Lookaside Buffers
@@ -395,6 +412,6 @@ Unified Translation Lookaside Buffers
 Returns:
     Array composed of detected unified translation lookaside buffers. Array is sorted in ascending order.
 +/
-const(Tlb)[] cpuid_uTlb() { return _uTlb[0 .. _uTlb_length]; }
+const(Tlb)[] mir_cpuid_uTlb() { return _uTlb[0 .. _uTlb_length]; }
 /// ditto
-alias uTlb = cpuid_uTlb;
+alias uTlb = mir_cpuid_uTlb;
