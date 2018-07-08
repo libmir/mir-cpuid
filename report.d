@@ -69,6 +69,7 @@ string unified()()
     }
 
     app.formattedWrite("################ Unified Information ################\n");
+    app.formattedWrite("CPU number: %s\n", cpus);
     app.formattedWrite("Cores per CPU: %s\n", cores);
     app.formattedWrite("Threads per CPU: %s\n", threads);
 

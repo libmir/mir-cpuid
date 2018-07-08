@@ -10,6 +10,21 @@ Authors:   Ilya Yaroshenko
 +/
 module cpuid.unified;
 
+version (OSX)
+    version = Darwin;
+else
+version (iOS)
+    version = Darwin;
+else
+version (TVOS)
+    version = Darwin;
+else
+version (WatchOS)
+    version = Darwin;
+else
+version (D_Ddoc)
+    version = Darwin;
+
 ///
 unittest
 {
@@ -286,10 +301,16 @@ void cpuid_init()
             }
         }
     }
-
-    if(!_cpus) _cpus = 1;
+    version(Darwin)
+    {
+        import cpuid.sys.darwin: sysctlbyname1;
+        _cpus = sysctlbyname1("hw.packages");
+    }
+    else
+    {
+        _cpus = _cpus = 1;
+    }
     if(!_cores) _cores = 1;
-    if(!_threads) _threads = 1;
     if(_threads < _cores) _threads = _cores;
 
     if(_iCache_length) _iCache[0].cores = 1;
