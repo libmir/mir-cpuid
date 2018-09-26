@@ -15,8 +15,6 @@ void main()
     import std.stdio;
     import cpuid.unified;
 
-    cpuid_init();
-
     enum fmt = "%14s: %s";
 
     fmt.writefln("cores", cores);

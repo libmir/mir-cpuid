@@ -75,7 +75,7 @@ struct Leaf2Information
 
     Specification: Intel
     +/
-    nothrow @nogc
+    nothrow @nogc pure
     this()(CpuInfo info)
     {
         version(BigEndian) static assert(0, "Leaf2Information is not implemented for BigEndian.");
