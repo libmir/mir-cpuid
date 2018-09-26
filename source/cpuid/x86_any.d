@@ -198,7 +198,7 @@ union Leaf1Information
             bool movbe();
             ///
             bool popcnt();
-            ///(
+            ///
             bool tsc_deadline();
             ///
             bool aes();
@@ -524,7 +524,6 @@ struct CpuInfo
 
 /++
 Params:
-    info = information received from CPUID instruction
     eax = function id
     ecx = sub-function id
 +/
