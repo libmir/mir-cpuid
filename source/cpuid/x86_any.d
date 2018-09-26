@@ -128,6 +128,7 @@ union Leaf1Information
         @trusted @property pure nothrow @nogc:
         version(D_Ddoc)
         {
+        const:
             /// Stepping ID
             uint stepping();
             /// Model
@@ -383,6 +384,7 @@ union Leaf7Information
         @trusted @property pure nothrow @nogc:
         version(D_Ddoc)
         {
+        const:
              /// Supports RDFSBASE/RDGSBASE/WRFSBASE/WRGSBASE if 1.
              bool fsgsbase();
              ///MSR is supported if 1.

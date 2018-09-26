@@ -718,7 +718,7 @@ union Leaf4Information
 
         version(D_Ddoc)
         {
-            @trusted @property pure nothrow @nogc:
+            @trusted @property pure nothrow @nogc const:
             /// Cache Type Field.
             Type type();
             /// Cache Level (starts at 1).
