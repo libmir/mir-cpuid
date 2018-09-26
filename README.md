@@ -52,6 +52,8 @@ See also [output example](https://gist.github.com/9il/66d2f824ca52e1293358b86604
 
 ## Building a betterC library
 
+BetterC mode works when compiled with LDC only.
+
 ```
 dub build --compiler=ldmd2 --build=betterC --build-mode=singleFile --parallel
 ```
