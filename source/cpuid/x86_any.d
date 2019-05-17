@@ -588,6 +588,7 @@ private __gshared immutable char[12][21] _vendors =
     "AMDisbetter!",
     "CentaurHauls",
     "CyrixInstead",
+    "HygonGenuine",
     "GenuineTMx86",
     "Geode by NSC",
     "NexGenDriven",
@@ -666,6 +667,8 @@ enum VendorIndex
     centaur,
     /// Cyrix
     cyrix,
+    /// Hygon CPU (AMD like)
+    hygon,
     /// Transmeta
     transmeta,
     /// National Semiconductor
