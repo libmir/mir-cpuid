@@ -602,12 +602,12 @@ CpuInfo _cpuid()(uint eax, uint ecx = 0)
     version(GNU)
     asm pure nothrow @nogc
     {
-        "cpuid" : 
-            "=a" a,
-            "=b" b, 
-            "=c" c,
-            "=d" d,
-            : "a" eax, "c" ecx;
+        "cpuid" :
+            "=a" (a),
+            "=b" (b),
+            "=c" (c),
+            "=d" (d),
+            : "a" (eax), "c" (ecx);
     }
     else
     version(InlineAsm_X86_Any)
